@@ -9,14 +9,28 @@ class Patio {
         localStorage.setItem("patio", JSON.stringify(this.veiculos));
     }
     calcularTempoEstacionado(entrada) {
-        const tempo = Math.floor((new Date().getTime() - new Date(entrada).getTime()) / 1000 / 60);
-        return tempo;
+        const entradaDate = typeof entrada === 'string' ? new Date(entrada) : entrada;
+        const agora = new Date();
+        const diffMs = agora.getTime() - entradaDate.getTime();
+        const diffMin = Math.floor(diffMs / (1000 * 60));
+        const horas = Math.floor(diffMin / 60);
+        const minutos = diffMin % 60;
+        return `${horas} horas e ${minutos} minutos`;
     }
     exibirMensagemTempoEstacionado(nome, tempo) {
-        const msg = `O veiculo ${nome} permaneceu estacionado por ${tempo} minutos`;
+        const msg = `O veículo ${nome} permaneceu estacionado por ${tempo}`;
         return confirm(msg);
     }
+    validarPlaca(placa) {
+        const regexPlaca = /^[A-Z]{3}-?\d{4}$/;
+        return regexPlaca.test(placa);
+    }
     adicionar(veiculo) {
+        if (!this.validarPlaca(veiculo.placa)) {
+            alert("Placa inválida. Insira uma placa no formato correto (ex: ABC-1234 ou ABC1234).");
+            return;
+        }
+        veiculo.entrada = new Date(); // Definir a entrada como objeto Date
         this.veiculos.push(veiculo);
         this.salvar();
         this.listar();
@@ -43,6 +57,7 @@ class Patio {
                 row.innerHTML = `
           <td>${veiculo.nome}</td>
           <td>${veiculo.placa}</td>
+          <td>${veiculo.tipo}</td>
           <td>${veiculo.entrada}</td>
           <td>
             <button class="delete" data-placa="${veiculo.placa}">X</button>
@@ -65,20 +80,15 @@ class Patio {
         cadastrarBtn.addEventListener("click", () => {
             const nomeInput = $("#nome");
             const placaInput = $("#placa");
+            const tipoSelect = $("#tipo");
             const nome = nomeInput.value;
             const placa = placaInput.value;
-            if (!nome || !placa) {
-                alert("Preencha todos os campos!");
-                return;
-            }
-            const veiculo = {
-                nome,
-                placa,
-                entrada: new Date().toISOString(),
-            };
-            patio.adicionar(veiculo);
+            const tipo = tipoSelect.value;
+            const entrada = new Date().toLocaleString("pt-BR");
+            patio.adicionar({ nome, placa, tipo, entrada });
             nomeInput.value = "";
             placaInput.value = "";
+            tipoSelect.value = "Carro";
         });
     }
 })();
