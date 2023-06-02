@@ -5,73 +5,98 @@ interface Veiculo {
   saida?: Date;
 }
 
+class Patio {
+  private veiculos: Veiculo[];
 
-(function () {
-const $ = (query: string): HTMLInputElement | null => document.querySelector(query);
+  constructor() {
+    this.veiculos = this.ler();
+  }
 
-function patio() {
-
-  function ler(){
+  private ler(): Veiculo[] {
     return JSON.parse(localStorage.getItem("patio") || "[]") as Veiculo[];
   }
 
-  function adicionar(veiculo: Veiculo, salva?: boolean){
-    const row = document.createElement("tr");
-    row.innerHTML = `
-    <td>${veiculo.nome}</td>
-    <td>${veiculo.placa}</td>
-    <td>${veiculo.entrada}</td>
-    <td> 
-      <button class="delete" data-placa="${veiculo.placa}">X</button>
-    </td>
-    `;
-    row.querySelector(".delete")?.addEventListener("click", function(){
-      remover(this.dataset.placa);
-    });
-
-
-    $("#patio")?.appendChild(row);
-    if(salva){
-      salvar([...ler(), veiculo]);
-    }
+  private salvar(): void {
+    localStorage.setItem("patio", JSON.stringify(this.veiculos));
   }
 
-  function remover(placa: string){
-    const { entrada, nome } = ler().find((veiculo) => veiculo.placa === placa);
+  private calcularTempoEstacionado(entrada: Date | string): number {
     const tempo = Math.floor((new Date().getTime() - new Date(entrada).getTime()) / 1000 / 60);
+    return tempo;
+  }
+
+  private exibirMensagemTempoEstacionado(nome: string, tempo: number): boolean {
     const msg = `O veiculo ${nome} permaneceu estacionado por ${tempo} minutos`;
-    if(confirm(msg)){
-      salvar(ler().filter((veiculo) => veiculo.placa !== placa));
-      listar();
+    return confirm(msg);
+  }
+
+  public adicionar(veiculo: Veiculo): void {
+    this.veiculos.push(veiculo);
+    this.salvar();
+    this.listar();
+  }
+
+  public remover(placa: string): void {
+    const veiculoIndex = this.veiculos.findIndex((veiculo) => veiculo.placa === placa);
+    if (veiculoIndex !== -1) {
+      const veiculo = this.veiculos[veiculoIndex];
+      const tempoEstacionado = this.calcularTempoEstacionado(veiculo.entrada);
+      if (this.exibirMensagemTempoEstacionado(veiculo.nome, tempoEstacionado)) {
+        this.veiculos.splice(veiculoIndex, 1);
+        this.salvar();
+        this.listar();
+      }
     }
   }
 
-  function salvar(veiculo: Veiculo[]){
-    localStorage.setItem("patio", JSON.stringify(veiculo));
-  }
-
-  function listar(){
-    $("#patio")!.innerHTML = "";
-    const veiculos = ler();
-    if(veiculos.length){
-      veiculos.forEach((veiculo) => adicionar(veiculo));
-
+  public listar(): void {
+    const patioElement = document.querySelector("#patio");
+    if (patioElement) {
+      patioElement.innerHTML = "";
+      this.veiculos.forEach((veiculo) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${veiculo.nome}</td>
+          <td>${veiculo.placa}</td>
+          <td>${veiculo.entrada}</td>
+          <td>
+            <button class="delete" data-placa="${veiculo.placa}">X</button>
+          </td>
+        `;
+        row.querySelector(".delete")?.addEventListener("click", () => {
+          this.remover(veiculo.placa);
+        });
+        patioElement.appendChild(row);
+      });
     }
   }
-
-  return { ler, adicionar, remover, salvar, listar };
 }
-patio().listar();
 
-$("#cadastrar")?.addEventListener("click", () => {
-  const nome = $("#nome").value;
-  const placa = $("#placa").value;
-  if (!nome || !placa) {
-    alert("Preencha todos os campos!");
-    return;
+(function () {
+  const $ = (query: string): HTMLElement | null => document.querySelector(query);
+
+  const patio = new Patio();
+  patio.listar();
+
+  const cadastrarBtn = $("#cadastrar");
+  if (cadastrarBtn) {
+    cadastrarBtn.addEventListener("click", () => {
+      const nomeInput = $("#nome") as HTMLInputElement;
+      const placaInput = $("#placa") as HTMLInputElement;
+      const nome = nomeInput.value;
+      const placa = placaInput.value;
+      if (!nome || !placa) {
+        alert("Preencha todos os campos!");
+        return;
+      }
+      const veiculo: Veiculo = {
+        nome,
+        placa,
+        entrada: new Date().toISOString(),
+      };
+      patio.adicionar(veiculo);
+      nomeInput.value = "";
+      placaInput.value = "";
+    });
   }
-
-  patio().adicionar({ nome, placa, entrada: new Date().toISOString() }, true);
-
-});
 })();
