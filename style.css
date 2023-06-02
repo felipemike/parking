@@ -1,0 +1,100 @@
+/* Estilos gerais */
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #f9f9f9;
+  padding: 20px;
+  margin: 0;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+/* Estilos do formulário */
+.form-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.form-container label {
+  margin-bottom: 10px;
+  color: #333;
+  font-weight: bold;
+}
+
+.form-container input[type="text"] {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.form-container button {
+  padding: 10px 20px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+}
+
+.form-container button:hover {
+  background-color: #45a049;
+}
+
+/* Estilos da tabela */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+table caption {
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+table th,
+table td {
+  padding: 12px;
+  border-bottom: 1px solid #ddd;
+}
+
+table th {
+  background-color: #4caf50;
+  color: white;
+  text-align: left;
+}
+
+table tbody tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+/* Estilos para botão de exclusão */
+.delete {
+  padding: 6px 12px;
+  background-color: #ff3333;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background-color 0.3s ease;
+}
+
+.delete:hover {
+  background-color: #e60000;
+}

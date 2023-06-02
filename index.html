@@ -4,26 +4,39 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Estacionamento</title>
+  <link rel="stylesheet" href="./style.css">
+  <title>Sistema de Estacionamento</title>
 </head>
 <body>
 
-  <input type="text" id="nome" placeholder="Digite o nome do motorista: " autocomplete="off">
-  <input type="text" id="placa" placeholder="Digite a placa do veículos: " autocomplete="off">
-  <button id="cadastrar">Cadastrar</button>
+  <div class="container">
+    <h1>Sistema de Estacionamento</h1>
 
-  <table>
-    <thead>
-      <tr>
-        <th>Nome</th>
-        <th>Placa</th>
-        <th>Entrada</th>
-        <th>Acão</th>
-      </tr>
-    </thead>
-    <tbody id="patio">
-    </tbody>
-  </table>
+    <form class="form-container">
+      <label for="nome">Nome do Motorista:</label>
+      <input type="text" id="nome" placeholder="Digite o nome do motorista" autocomplete="off" required>
+
+      <label for="placa">Placa do Veículo:</label>
+      <input type="text" id="placa" placeholder="Digite a placa do veículo" autocomplete="off" required>
+
+      <button id="cadastrar">Cadastrar</button>
+    </form>
+
+    <table id="tabela-veiculos">
+      <caption>Veículos Estacionados</caption>
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Placa</th>
+          <th>Entrada</th>
+          <th>Ação</th>
+        </tr>
+      </thead>
+      <tbody id="patio">
+      </tbody>
+    </table>
+  </div>
+
   <script src="./script.js"></script>
 </body>
 </html>
