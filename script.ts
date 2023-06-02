@@ -1,7 +1,7 @@
 interface Veiculo {
   nome: string;
   placa: string;
-  entrada: Date;
+  entrada: Date | string;
   saida?: Date;
 }
 
@@ -11,9 +11,11 @@ const $ = (query: string): HTMLInputElement | null => document.querySelector(que
 
 function patio() {
 
-  function ler(){}
+  function ler(){
+    return JSON.parse(localStorage.getItem("patio") || "[]") as Veiculo[];
+  }
 
-  function adicionar(veiculo: Veiculo){
+  function adicionar(veiculo: Veiculo, salva?: boolean){
     const row = document.createElement("tr");
     row.innerHTML = `
     <td>${veiculo.nome}</td>
@@ -23,17 +25,43 @@ function patio() {
       <button class="delete" data-placa="${veiculo.placa}">X</button>
     </td>
     `;
+    row.querySelector(".delete")?.addEventListener("click", function(){
+      remover(this.dataset.placa);
+    });
+
+
     $("#patio")?.appendChild(row);
+    if(salva){
+      salvar([...ler(), veiculo]);
+    }
   }
 
-  function remover(){}
+  function remover(placa: string){
+    const { entrada, nome } = ler().find((veiculo) => veiculo.placa === placa);
+    const tempo = Math.floor((new Date().getTime() - new Date(entrada).getTime()) / 1000 / 60);
+    const msg = `O veiculo ${nome} permaneceu estacionado por ${tempo} minutos`;
+    if(confirm(msg)){
+      salvar(ler().filter((veiculo) => veiculo.placa !== placa));
+      listar();
+    }
+  }
 
-  function salvar(){}
+  function salvar(veiculo: Veiculo[]){
+    localStorage.setItem("patio", JSON.stringify(veiculo));
+  }
 
-  function listar(){}
+  function listar(){
+    $("#patio")!.innerHTML = "";
+    const veiculos = ler();
+    if(veiculos.length){
+      veiculos.forEach((veiculo) => adicionar(veiculo));
+
+    }
+  }
 
   return { ler, adicionar, remover, salvar, listar };
 }
+patio().listar();
 
 $("#cadastrar")?.addEventListener("click", () => {
   const nome = $("#nome").value;
@@ -43,7 +71,7 @@ $("#cadastrar")?.addEventListener("click", () => {
     return;
   }
 
-  patio().adicionar({ nome, placa, entrada: new Date() });
+  patio().adicionar({ nome, placa, entrada: new Date().toISOString() }, true);
 
 });
 })();
